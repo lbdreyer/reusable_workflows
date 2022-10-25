@@ -61,3 +61,34 @@ jobs:
         with:
           path: ${{matrix.python}}-linux-64.lock
 
+      - name: "Generate token"
+        uses: tibdex/github-app-token@v1
+        id: generate-token
+        with:
+          app_id: ${{ secrets.AUTH_APP_ID }}
+          private_key: ${{ secrets.AUTH_APP_PRIVATE_KEY }}
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@b4d51739f96fca8047ad065eccef63442d8e99f7
+        with:
+          #token: ${{ steps.generate-token.outputs.token }}
+          commit-message: Updated environment lockfiles
+          committer: "Lockfile bot <noreply@github.com>"
+          author: "Lockfile bot <noreply@github.com>"
+          delete-branch: true
+          branch: auto-update-lockfiles
+          title: "[iris.ci] environment lockfiles auto-update"
+          body: |
+            Lockfiles updated to the latest resolvable environment.
+            ### If the CI tasks fail, create a new branch based on this PR and add the required fixes to that branch.
+          labels: |
+            New: Pull Request
+            Bot
+      - name: Check Pull Request
+        if: steps.cpr.outputs.pull-request-number != ''
+        run: |
+          echo "pull-request #${{ steps.cpr.outputs.pull-request-number }}"
+          echo "pull-request URL ${{ steps.cpr.outputs.pull-request-url }}"
+          echo "pull-request operation [${{ steps.cpr.outputs.pull-request-operation }}]"
+          echo "pull-request head SHA ${{ steps.cpr.outputs.pull-request-head-sha }}"
