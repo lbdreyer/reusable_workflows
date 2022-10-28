@@ -43,7 +43,7 @@ jobs:
           echo "LOCK_FILE=requirements/ci/nox.lock/py$(echo ${{ matrix.python-version }} | tr -d '.')-linux-64.lock" >> ${GITHUB_ENV}
 
       - name: "data cache"
-        uses: lbdreyer/reusable_workflows/.github/workflows/composite/iris-data-cache
+        uses: scitools/iris/.github/workflows/composite/iris-data-cache
         with:
           cache_build: 0
           env_name: ${{ env.ENV_NAME }}
